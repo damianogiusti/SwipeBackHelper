@@ -4,65 +4,66 @@ import android.app.Activity;
 
 import java.util.Stack;
 
-/**
- * 滑动的全局管理类
- */
 public class SwipeBackHelper {
 
-    private static final Stack<SwipeBackPage> mPageStack = new Stack<>();
+    private final Stack<SwipeBackPage> pageStack = new Stack<>();
 
-    private static SwipeBackPage findHelperByActivity(Activity activity){
-        for (SwipeBackPage swipeBackPage : mPageStack) {
-            if (swipeBackPage.mActivity == activity) return swipeBackPage;
+    private SwipeBackPage findHelperByActivity(Activity activity) {
+        for (SwipeBackPage swipeBackPage : pageStack) {
+            if (swipeBackPage.getActivity() == activity) {
+                return swipeBackPage;
+            }
         }
         return null;
     }
 
-    public static SwipeBackPage getCurrentPage(Activity activity){
-        SwipeBackPage page;
-        if ((page = findHelperByActivity(activity)) == null){
+    public SwipeBackPage getCurrentPage(Activity activity) {
+        SwipeBackPage page = findHelperByActivity(activity);
+        if (page == null) {
             throw new RuntimeException("You Should call SwipeBackHelper.onCreate(activity) first");
         }
         return page;
     }
 
-    public static void onCreate(Activity activity) {
-        SwipeBackPage page;
-        if ((page = findHelperByActivity(activity)) == null){
-            page = mPageStack.push(new SwipeBackPage(activity));
+    public void onCreate(Activity activity) {
+        SwipeBackPage page = findHelperByActivity(activity);
+        if (page == null) {
+            page = pageStack.push(new SwipeBackPage(activity, this));
         }
         page.onCreate();
     }
 
-    public static void onPostCreate(Activity activity){
-        SwipeBackPage page;
-        if ((page = findHelperByActivity(activity)) == null){
+    public void onPostCreate(Activity activity) {
+        SwipeBackPage page = findHelperByActivity(activity);
+        if (page == null) {
             throw new RuntimeException("You Should call SwipeBackHelper.onCreate(activity) first");
         }
         page.onPostCreate();
     }
 
-    public static void onDestroy(Activity activity){
-        SwipeBackPage page;
-        if ((page = findHelperByActivity(activity)) == null){
+    public void onDestroy(Activity activity) {
+        SwipeBackPage page = findHelperByActivity(activity);
+        if (page == null) {
             throw new RuntimeException("You Should call SwipeBackHelper.onCreate(activity) first");
         }
-        mPageStack.remove(page);
-        page.mActivity=null;
+        pageStack.remove(page);
+        page.setActivity(null);
     }
 
-    public static void finish(Activity activity){
-        SwipeBackPage page;
-        if ((page = findHelperByActivity(activity)) == null){
+    public void finish(Activity activity) {
+        SwipeBackPage page = findHelperByActivity(activity);
+        if (page == null) {
             throw new RuntimeException("You Should call SwipeBackHelper.onCreate(activity) first");
         }
         page.scrollToFinishActivity();
     }
 
-    static SwipeBackPage getPrePage(SwipeBackPage activity){
-        int index = mPageStack.indexOf(activity);
-        if (index>0)return mPageStack.get(index-1);
-        else return null;
+    SwipeBackPage getPageBefore(SwipeBackPage activity) {
+        int index = pageStack.indexOf(activity);
+        if (index > 0) {
+            return pageStack.get(index - 1);
+        } else {
+            return null;
+        }
     }
-
 }

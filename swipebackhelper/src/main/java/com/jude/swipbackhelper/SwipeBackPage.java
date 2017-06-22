@@ -1,120 +1,125 @@
 package com.jude.swipbackhelper;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.ViewGroup;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Mr.Jude on 2015/8/3.
- * 每个滑动页面的管理
  */
 public class SwipeBackPage {
-    //仅为判断是否需要将mSwipeBackLayout注入进去
     private boolean mEnable = true;
     private boolean mRelativeEnable = false;
 
-    Activity mActivity;
-    SwipeBackLayout mSwipeBackLayout;
-    RelateSlider slider;
-    SwipeBackPage(Activity activity){
-        this.mActivity = activity;
+    private WeakReference<SwipeBackHelper> swipeBackHelper;
+    private Activity activity;
+    private SwipeBackLayout swipeBackLayout;
+    private RelateSlider slider;
+
+    SwipeBackPage(Activity activity, SwipeBackHelper swipeBackHelper) {
+        this.activity = activity;
+        this.swipeBackHelper = new WeakReference<>(swipeBackHelper);
     }
 
-    //页面的回调用于配置滑动效果
-    void onCreate(){
-        mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mActivity.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-        mSwipeBackLayout = new SwipeBackLayout(mActivity);
-        mSwipeBackLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    void onCreate() {
+        activity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        activity.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+        swipeBackLayout = new SwipeBackLayout(activity);
+        swipeBackLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         slider = new RelateSlider(this);
     }
 
-    void onPostCreate(){
+    void onPostCreate() {
         handleLayout();
     }
 
 
-    @TargetApi(11)
-    public SwipeBackPage setSwipeRelateEnable(boolean enable){
+    public SwipeBackPage setSwipeRelateEnable(boolean enable) {
         mRelativeEnable = enable;
         slider.setEnable(enable);
         return this;
     }
 
-    public SwipeBackPage setSwipeRelateOffset(int offset){
+    public SwipeBackPage setSwipeRelateOffset(int offset) {
         slider.setOffset(offset);
         return this;
     }
 
-    //是否可滑动关闭
     public SwipeBackPage setSwipeBackEnable(boolean enable) {
         mEnable = enable;
-        mSwipeBackLayout.setEnableGesture(enable);
+        swipeBackLayout.setEnableGesture(enable);
         handleLayout();
         return this;
     }
 
-    private void handleLayout(){
-        if (mEnable||mRelativeEnable){
-            mSwipeBackLayout.attachToActivity(mActivity);
-        }else {
-            mSwipeBackLayout.removeFromActivity(mActivity);
+    private void handleLayout() {
+        if (mEnable || mRelativeEnable) {
+            swipeBackLayout.attachToActivity(activity);
+        } else {
+            swipeBackLayout.removeFromActivity(activity);
         }
     }
 
-    //可滑动的范围。百分比。200表示为左边200px的屏幕
-    public SwipeBackPage setSwipeEdge(int swipeEdge){
-        mSwipeBackLayout.setEdgeSize(swipeEdge);
+    public SwipeBackPage setSwipeEdge(int swipeEdge) {
+        swipeBackLayout.setEdgeSize(swipeEdge);
         return this;
     }
 
-    //可滑动的范围。百分比。0.2表示为左边20%的屏幕
-    public SwipeBackPage setSwipeEdgePercent(float swipeEdgePercent){
-        mSwipeBackLayout.setEdgeSizePercent(swipeEdgePercent);
+    public SwipeBackPage setSwipeEdgePercent(float swipeEdgePercent) {
+        swipeBackLayout.setEdgeSizePercent(swipeEdgePercent);
         return this;
     }
 
-    //对横向滑动手势的敏感程度。0为迟钝 1为敏感
-    public SwipeBackPage setSwipeSensitivity(float sensitivity){
-        mSwipeBackLayout.setSensitivity(mActivity, sensitivity);
+    public SwipeBackPage setSwipeSensitivity(float sensitivity) {
+        swipeBackLayout.setSensitivity(activity, sensitivity);
         return this;
     }
 
-    //底层阴影颜色
-    public SwipeBackPage setScrimColor(int color){
-        mSwipeBackLayout.setScrimColor(color);
+    public SwipeBackPage setScrimColor(int color) {
+        swipeBackLayout.setScrimColor(color);
         return this;
     }
 
-    //触发关闭Activity百分比
-    public SwipeBackPage setClosePercent(float percent){
-        mSwipeBackLayout.setScrollThreshold(percent);
+    public SwipeBackPage setClosePercent(float percent) {
+        swipeBackLayout.setScrollThreshold(percent);
         return this;
     }
 
-    public SwipeBackPage setDisallowInterceptTouchEvent(boolean disallowIntercept){
-        mSwipeBackLayout.setDisallowInterceptTouchEvent(disallowIntercept);
+    public SwipeBackPage setDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        swipeBackLayout.setDisallowInterceptTouchEvent(disallowIntercept);
         return this;
     }
 
-    public SwipeBackPage addListener(SwipeListener listener){
-        mSwipeBackLayout.addSwipeListener(listener);
+    public SwipeBackPage addListener(SwipeListener listener) {
+        swipeBackLayout.addSwipeListener(listener);
         return this;
     }
 
-    public SwipeBackPage removeListener(SwipeListener listener){
-        mSwipeBackLayout.removeSwipeListener(listener);
+    public SwipeBackPage removeListener(SwipeListener listener) {
+        swipeBackLayout.removeSwipeListener(listener);
         return this;
     }
 
     public SwipeBackLayout getSwipeBackLayout() {
-        return mSwipeBackLayout;
+        return swipeBackLayout;
     }
 
     public void scrollToFinishActivity() {
-        mSwipeBackLayout.scrollToFinishActivity();
+        swipeBackLayout.scrollToFinishActivity();
     }
 
+    Activity getActivity() {
+        return activity;
+    }
+
+    void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    SwipeBackHelper getSwipeBackHelper() {
+        return swipeBackHelper.get();
+    }
 }

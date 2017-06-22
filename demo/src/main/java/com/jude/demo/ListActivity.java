@@ -16,7 +16,6 @@ import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.rollviewpager.RollPagerView;
 import com.jude.rollviewpager.hintview.ColorPointHintView;
-import com.jude.swipbackhelper.SwipeBackHelper;
 import com.jude.utils.JUtils;
 
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class ListActivity extends BaseActivity {
 
             }
         });
-        SwipeBackHelper.getCurrentPage(this)
+        swipeBackHelper().getCurrentPage(this)
                 .setSwipeBackEnable(false)
         .setSwipeBackEnable(true);
     }

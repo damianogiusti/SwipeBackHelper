@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SwipeBackLayout extends FrameLayout {
-    private static final String TAG = "ViewDragHelper";
 
     /**
      * Minimum velocity that will be detected as a fling
@@ -201,7 +200,6 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
 
-
     /**
      * Set scroll threshold, we will close the activity, when scrollPercent over
      * this value
@@ -239,7 +237,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (!mEnable||mDisallowIntercept) {
+        if (!mEnable || mDisallowIntercept) {
             return false;
         }
         try {
@@ -258,7 +256,6 @@ public class SwipeBackLayout extends FrameLayout {
         try {
             mDragHelper.processTouchEvent(event);
         } catch (Exception e) {
-//            e.printStackTrace();
             return false;
         }
         return true;
@@ -317,19 +314,19 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
     public void attachToActivity(Activity activity) {
-        if (getParent()!=null){
+        if (getParent() != null) {
             return;
         }
         mActivity = activity;
-        TypedArray a = activity.getTheme().obtainStyledAttributes(new int[]{
+        TypedArray a = activity.getTheme().obtainStyledAttributes(new int[] {
                 android.R.attr.windowBackground
         });
         int background = a.getResourceId(0, 0);
         a.recycle();
 
         ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView();
-        View decorChild  = decor.findViewById(android.R.id.content);
-        while (decorChild.getParent() != decor){
+        View decorChild = decor.findViewById(android.R.id.content);
+        while (decorChild.getParent() != decor) {
             decorChild = (View) decorChild.getParent();
         }
         decorChild.setBackgroundResource(background);
@@ -339,8 +336,8 @@ public class SwipeBackLayout extends FrameLayout {
         decor.addView(this);
     }
 
-    public void removeFromActivity(Activity activity){
-        if (getParent()==null)return;
+    public void removeFromActivity(Activity activity) {
+        if (getParent() == null) return;
         ViewGroup decorChild = (ViewGroup) getChildAt(0);
         ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView();
         decor.removeView(this);
@@ -399,7 +396,7 @@ public class SwipeBackLayout extends FrameLayout {
                 }
             }
             if (mScrollPercent >= 1) {
-                if (!mActivity.isFinishing()){
+                if (!mActivity.isFinishing()) {
                     if (mListeners != null && !mListeners.isEmpty()
                             && mScrollPercent >= mScrollThreshold && mIsScrollOverValid) {
                         mIsScrollOverValid = false;
@@ -408,10 +405,10 @@ public class SwipeBackLayout extends FrameLayout {
                         }
                     }
                     mActivity.finish();
+                    // cancel finish animation for avoiding graphical glitches
+                    mActivity.overridePendingTransition(0, 0);
                 }
             }
-
-
         }
 
         @Override
@@ -419,10 +416,8 @@ public class SwipeBackLayout extends FrameLayout {
             final int childWidth = releasedChild.getWidth();
 
             int left = 0, top = 0;
-            //判断释放以后是应该滑到最右边(关闭)，还是最左边（还原）
             left = xvel > 0 || xvel == 0 && mScrollPercent > mScrollThreshold ? childWidth
                     + mShadowLeft.getIntrinsicWidth() + OVERSCROLL_DISTANCE : 0;
-
 
             mDragHelper.settleCapturedViewAt(left, top);
             invalidate();
@@ -432,6 +427,5 @@ public class SwipeBackLayout extends FrameLayout {
         public int clampViewPositionHorizontal(View child, int left, int dx) {
             return Math.min(child.getWidth(), Math.max(left, 0));
         }
-
     }
 }
